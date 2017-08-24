@@ -1,0 +1,14 @@
+PSTOPIC
+    about_PSMitrend
+
+SHORT DESCRIPTION
+    PSMitrend is a Powershell module for creating and submitting Mitrend assessment.
+
+LONG DESCRIPTION
+    PSMitrend is a Powershell module for creating and submitting Mitrend assessment.
+
+    Source of the module is available at:
+        https://github.com/equelin/PSMitrend
+
+DETAILED DESCRIPTION
+    PSMitrend is a Powershell module for creating and submitting Mitrend assessment.
