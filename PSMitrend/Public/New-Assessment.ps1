@@ -146,6 +146,7 @@ Function New-Assessment {
 		}
 
 		return $response
+
 	} else {
 		Throw "Please provide credentials"
 	}

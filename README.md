@@ -31,7 +31,13 @@ Powershell module for creating and submitting Mitrend assessments
 ### How to submit an assessment
 
 1- Follow the mitrend documentation to gather all relevent files
+
 2- Open a Powershell console and load the module
+
+```Powershell
+> Import-Module PSMitrend
+```
+
 3- Create an assessment
 
 ```Powershell
@@ -39,6 +45,7 @@ Powershell module for creating and submitting Mitrend assessments
 ```
 
 4- Provide your Mitrend credentials when requested
+
 5- Attach files to your assessment (This will upload the file to the Mitrend's servers)
 
 ```Powershell
@@ -51,8 +58,9 @@ Powershell module for creating and submitting Mitrend assessments
 > Submit-Assessment -Assessment $Assessment.id
 ```
 
-7- If everything goes well, you should receive emails from Mitrend stating that they are processing the data.
-8- You can request Mitrend to send you an email with the assessment in xml format with the command `Request-EmailReport`. I you need the powerpoint reports, you will have to download them from the Mitrend website
+7- If everything goes well, you should receive emails from Mitrend stating that they are processing the data
+
+8- You can request Mitrend to send you an email with the assessment in xml format with the command `Request-EmailReport`. I you need powerpoint's reports, you will have to download them from the Mitrend website
 
 ```Powershell
 > Request-EmailReport -Assessment $Assessment.id
