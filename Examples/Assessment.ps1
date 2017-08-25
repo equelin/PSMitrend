@@ -20,6 +20,7 @@ $Password = 'MyMitrendPassword'
 $Company = 'MyCompany'
 $AssessmentName = 'MyAssessment'
 $City = 'Paris'
+$Country = 'FR'
 $Timezone = 'EUROPE/Paris'
 $Attributes = @{
     RequestID = 'InternalID'
@@ -42,7 +43,7 @@ $Credentials = New-Object System.Management.Automation.PSCredential ($Username, 
 
 #Create a new assessment
 Write-Host "Create a new assessment"
-$Assessment = New-Assessment -Credentials $Credentials -Company $Company -AssessmentName $AssessmentName -City $City -Timezone $Timezone -Attributes $Attributes -Tags $Tags
+$Assessment = New-Assessment -Credentials $Credentials -Company $Company -AssessmentName $AssessmentName -City $City -Country $Country -Timezone $Timezone -Attributes $Attributes -Tags $Tags
 
 #Test if everything works well
 If ($Assessment) {
