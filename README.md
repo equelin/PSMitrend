@@ -30,6 +30,8 @@ Powershell module for creating and submitting Mitrend assessments
 
 ### How to submit an assessment
 
+> You can find a more detailed script [here](./Examples/Assessment.ps1)
+
 1- Follow the mitrend documentation to gather all relevent files
 
 2- Open a Powershell console and load the module
@@ -38,24 +40,28 @@ Powershell module for creating and submitting Mitrend assessments
 > Import-Module PSMitrend
 ```
 
-3- Create an assessment
+3- Get your Mitrend credentials
 
 ```Powershell
-> $Assessment = New-Assessment -Company 'MyCompany' -AssessmentName 'MyAssessment'
+> $Credentials = Get-Credential
 ```
 
-4- Provide your Mitrend credentials when requested
+4- Create an assessment
+
+```Powershell
+> $Assessment = New-Assessment -Credentials $Credentials -Company 'MyCompany' -AssessmentName 'MyAssessment'
+```
 
 5- Attach files to your assessment (This will upload the file to the Mitrend's servers)
 
 ```Powershell
-> Send-File -Assessment $Assessment.id -DeviceType 'Unity' -File C:\Myfile.zip
+> Send-File -Credentials $Credentials -Assessment $Assessment.id -DeviceType 'Unity' -File C:\Myfile.zip
 ```
 
 6- Submit the assessment (You will not be able to attach new files after that)
 
 ```Powershell
-> Submit-Assessment -Assessment $Assessment.id
+> Submit-Assessment -Credentials $Credentials -Assessment $Assessment.id
 ```
 
 7- If everything goes well, you should receive emails from Mitrend stating that they are processing the data
@@ -63,7 +69,7 @@ Powershell module for creating and submitting Mitrend assessments
 8- You can request Mitrend to send you an email with the assessment in xml format with the command `Request-EmailReport`. I you need powerpoint's reports, you will have to download them from the Mitrend website
 
 ```Powershell
-> Request-EmailReport -Assessment $Assessment.id
+> Request-EmailReport -Credentials $Credentials -Assessment $Assessment.id
 ```
 
 # Author
