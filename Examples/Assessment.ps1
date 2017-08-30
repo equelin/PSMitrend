@@ -2,11 +2,7 @@
 
 <#
 	.SYNOPSIS
-<<<<<<< HEAD
-	Example for creating a Mitrend assessment in Powershell with module PSMitrend
-=======
 	Example for creating a Mitrend assessment in Powershell with module PSMitrend.
->>>>>>> develop
 	.NOTES
 	Written by Erwan Quelin under MIT licence - https://github.com/equelin/PSMitrend/blob/master/LICENSE
 	.LINK
