@@ -9,7 +9,7 @@ Powershell module for creating and submitting Mitrend assessments
 # Usage Instructions
 ### Install the module
 ```powershell
-#Automated installation (Powershell 5):
+#Automated installation from the Powershell Gallery (Powershell 5):
     Install-Module PSMitrend
 
 # Or manual setup
@@ -24,7 +24,7 @@ Powershell module for creating and submitting Mitrend assessments
     Get-Command -Module PSMitrend
 
 # Get help
-    Get-Help New-Assessment -Full #Get help for a specific command
+    Get-Help Request-Assessment -Full #Get help for a specific command
     Get-Help PSMitrend
 ```
 
@@ -32,9 +32,9 @@ Powershell module for creating and submitting Mitrend assessments
 
 > You can find a more detailed script [here](./Examples/Assessment.ps1)
 
-1- Follow the mitrend documentation to gather all relevent files
+1- Follow the mitrend documentation to gather all relevant files
 
-2- Open a Powershell console and load the module
+2- Open a Powershell console and import the PSMitrend module
 
 ```Powershell
 > Import-Module PSMitrend
@@ -46,22 +46,10 @@ Powershell module for creating and submitting Mitrend assessments
 > $Credentials = Get-Credential
 ```
 
-4- Create an assessment
+4- Request an assessment
 
 ```Powershell
-> $Assessment = New-Assessment -Credentials $Credentials -Company 'MyCompany' -AssessmentName 'MyAssessment'
-```
-
-5- Attach files to your assessment (This will upload the file to the Mitrend's servers)
-
-```Powershell
-> Send-File -Credentials $Credentials -Assessment $Assessment.id -DeviceType 'Unity' -File C:\Myfile.zip
-```
-
-6- Submit the assessment (You will not be able to attach new files after that)
-
-```Powershell
-> Submit-Assessment -Credentials $Credentials -Assessment $Assessment.id
+> $Assessment = Request-Assessment -Credentials $Credentials -Company 'MyCompany' -AssessmentName 'MyAssessment' -DeviceType 'Unity' -File 'C:\Myfile.zip'
 ```
 
 7- If everything goes well, you should receive emails from Mitrend stating that they are processing the data

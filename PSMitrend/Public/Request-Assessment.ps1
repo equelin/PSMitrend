@@ -2,8 +2,7 @@
 	.SYNOPSIS
 	Create an assessment.
 	.DESCRIPTION
-	Create an assessment, which will provide a grouping for the files that will be uploaded.
-	Returns an assessment identifier that is a mandatory parameter to later add file and submit the assessment.
+	Create an assessment, attache files to it and submit it.
 	.NOTES
 	Written by Erwan Quelin under MIT licence - https://github.com/equelin/PSMitrend/blob/master/LICENSE
 	.LINK
@@ -26,20 +25,26 @@
 	An hashtable representing any extra attributes.
 	.PARAMETER Tags
 	A list of strings to use as tags for this assessment.
+	.PARAMETER DeviceType
+    Device Type.
+	.PARAMETER File
+	Path to the file to upload.
 	.EXAMPLE
-	PS C:\>New-Assessment
+	PS C:\>Request-Assessment
 
 	Submit a new assessment. Ask for all mandatory parameters.
 	.EXAMPLE
-	PS C:\>$Cred = Get-Credential
-	PS C:\>$Tags = @(Tag1,Tag2)
-	PS C:\>$Attributes = @{Attrib1 = 'Value1'; Attrib2 = 'Value2'}
-	PS C:\>Request-Assessment -Credentials $cred -company 'MyCompany' -assessmentName 'Test' -timezone EUROPE\Paris -city 'Paris' -country 'FR' -Tags $Tags -attributes $Attrib
+	PS C:\> $Cred = Get-Credential
+	PS C:\> $Tags = @(Tag1,Tag2)
+	PS C:\> $Attributes = @{Attrib1 = 'Value1'; Attrib2 = 'Value2'}
+	PS C:\> $File = 'C:\Unity.zip'
+	PS C:\> $deviceType = 'Unity'
+	PS C:\> Request-Assessment -Credentials $cred -company 'MyCompany' -assessmentName 'Test' -timezone EUROPE\Paris -city 'Paris' -country 'FR' -Tags $Tags -attributes $Attrib -File $File -deviceType $deviceType
 
 	Submit a new assessment without prompting questions (except for credentials).
 #>
 
-Function New-Assessment {
+Function Request-Assessment {
 	[CmdletBinding()]
 	Param (
 		[Parameter(Mandatory = $false,HelpMessage = 'Credential object .')]
@@ -67,15 +72,20 @@ Function New-Assessment {
 		[System.Collections.Hashtable]$Attributes,
 
 		[Parameter(Mandatory = $false,HelpMessage = 'A list of strings to use as tags for this assessment.')]
-		[string[]]$Tags
+        [string[]]$Tags,
+
+		[Parameter(Mandatory = $true,HelpMessage = 'Type of device.')]
+        [validateset('ArcServe', 'Avamar', 'Backup_Exec', 'Clariion', 'CommVault', 'Compellent', 'Data Analyzer', 'Data Domain', 'Data_Protector', 'DD_AutoSupports', 'DPM', 'EMC_Grab', 'EqualLogic', 'HDS', 'HDS_AMS', 'HP_3PAR', 'HP_EVA', 'IBM_DS', 'IBM_Storage', 'IBM_v7000', 'IBM_XIV', 'IOSTAT', 'Isilon', 'Mitrend', 'Scanner', 'NetApp', 'NetBackup', 'NetWorker', 'Oracle_AWR', 'Oracle_RMAN', 'PerfCollect', 'RecoverPoint', 'SAN_Health', 'Symmetrix', 'TSM', 'Unity', 'Veeam', 'VMware', 'VNX_File', 'VNX_Skew', 'VPLEX', 'XtremIO')]
+        [string]$DeviceType,
+
+		[Parameter(Mandatory = $true,HelpMessage = 'Path to the file(s) to upload.')]
+		[ValidateScript({Foreach ($f in $_) {Test-Path $f}})]
+		[string[]]$File
 	)
 
 	Write-Debug -Message "[$($MyInvocation.MyCommand.Name)] Executing function"
 	Write-Debug -Message "[$($MyInvocation.MyCommand.Name)] ParameterSetName: $($PsCmdlet.ParameterSetName)"
 	Write-Debug -Message "[$($MyInvocation.MyCommand.Name)] PSBoundParameters: $($PSBoundParameters | Out-String)"
-
-	# Mitrend API URL
-	$apiBase="https://app.mitrend.com/api"
 
 	#Ask for credential if not provided as parameters
 	If (-not ($PSBoundParameters.ContainsKey('Credentials'))) {
@@ -84,70 +94,63 @@ Function New-Assessment {
 
 	If ($Credentials) {
 
-		#Build basic authentication header (Convert to base64)
-		$base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $Credentials.username,$Credentials.GetNetworkCredential().Password)))
-
 		#Build request body
-		$body = @{}
+		$AssessmentParameters = @{}
 
-		$body["company"] = $company
+		$AssessmentParameters["Credentials"] = $Credentials
 
-		$body["assessment_name"] = $assessmentName
+		$AssessmentParameters["company"] = $company
+
+		$AssessmentParameters["assessmentName"] = $assessmentName
 
 		If ($PSBoundParameters.ContainsKey('city')) {
-			$body["city"] = $city
+			$AssessmentParameters["city"] = $city
 		}
 
 		If ($PSBoundParameters.ContainsKey('state')) {
-			$body["state"] = $state
+			$AssessmentParameters["state"] = $state
 		}
 
 		If ($PSBoundParameters.ContainsKey('country')) {
-			$body["country"] = $country
+			$AssessmentParameters["country"] = $country
 		}
 
 		If ($PSBoundParameters.ContainsKey('timezone')) {
 			$EscapeTimezone = [uri]::EscapeDataString($timezone)
-			$body["timezone"] = $EscapeTimezone
+			$AssessmentParameters["timezone"] = $EscapeTimezone
 		}
 
 		If ($PSBoundParameters.ContainsKey('attributes')) {
-			$body["attributes"] = @{}
-			$body["attributes"] = $attributes
+			$AssessmentParameters["attributes"] = @{}
+			$AssessmentParameters["attributes"] = $attributes
 		}
 
 		If ($PSBoundParameters.ContainsKey('tags')) {
-			$body["tags"] = @()
-			$body["tags"] += $tags
+			$AssessmentParameters["tags"] = @()
+			$AssessmentParameters["tags"] += $tags
 		}
 
-		# Convert $body to json data format. Has to do this to be able to provide tags et attributes params
-		$Json = $body | ConvertTo-Json -Depth 10
+		Write-Debug -Message "[$($MyInvocation.MyCommand.Name)] Assessment parameters: $($AssessmentParameters | Out-String)"
 
-		Write-Debug -Message "[$($MyInvocation.MyCommand.Name)] Request body: $Json"
+		#Create a new assessment
+		Write-Debug -Message "[$($MyInvocation.MyCommand.Name)] Creating a new assessment"
+		$Assessment = New-Assessment @AssessmentParameters
 
-		#Build Invoke-RestMethod parameters
-		$Parameters = @{
-			Uri = "$apiBase/assessments"
-			ContentType = "application/json"
-			Headers = @{Authorization=("Basic {0}" -f $base64AuthInfo)}
-			Method = 'Post'
-			Body = $Json
+		#Test if everything works well
+		If ($Assessment) {
+
+			#Attach file(s) to assessment
+			Foreach ($F in $File) {
+				Write-Debug -Message "[$($MyInvocation.MyCommand.Name)] Attach file: $F to assessment: $($Assessment.id)"
+				Send-File -Credentials $Credentials -Assessment $Assessment.id -DeviceType $DeviceType -File $F | Out-Null
+			}
+
+			#Submit the assessment
+			Write-Debug -Message "[$($MyInvocation.MyCommand.Name)] Submit assessment: $($Assessment.id)"
+			Submit-Assessment -Credentials $Credentials -Assessment $Assessment.id
+
+		} else {
+			Throw "Error while creating an assessment."
 		}
-
-		Write-Debug -Message "[$($MyInvocation.MyCommand.Name)] Request parameters: $($Parameters | Out-String)"
-
-		# Send request
-		try {
-			$response =  Invoke-RestMethod @Parameters
-		}
-		catch [System.Net.WebException] {
-			Throw $_
-		}
-
-		return $response
-
-	} else {
-		Throw "Please provide credentials"
-	}
+    }
 }
