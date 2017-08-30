@@ -12,7 +12,7 @@
 RootModule = 'PSMitrend.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0.0'
+ModuleVersion = '1.1.0'
 
 # ID used to uniquely identify this module
 GUID = '446d99b9-c546-4d2a-adc9-8ed0a9414f4c'
@@ -66,7 +66,7 @@ PowerShellVersion = '4.0'
 # NestedModules = @()
 
 # Functions to export from this module
-FunctionsToExport = @('New-Assessment','Send-File','Submit-Assessment','Request-EmailReport')
+FunctionsToExport = @('Request-Assessment','New-Assessment','Send-File','Submit-Assessment','Request-EmailReport')
 
 # Cmdlets to export from this module
 CmdletsToExport = '*'
