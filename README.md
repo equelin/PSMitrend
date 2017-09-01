@@ -42,7 +42,7 @@ As stated in the [Mitrend's website](https://medium.com/mitrend/what-is-mitrend-
 
 ### How to submit an assessment
 
-> You can find a more detailed script [here](./Examples/Assessment.ps1)
+> You can find more detailed scripts [here](./Examples/README.md)
 
 1- Follow the mitrend documentation to gather all relevant files
 
