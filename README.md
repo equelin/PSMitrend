@@ -1,5 +1,17 @@
 # PSMitrend
-Powershell module for creating and submitting Mitrend assessments
+Powershell module for creating and submitting Mitrend assessments. It's purpose is to simplify the process of assessment's request by providing a single powershell command.
+
+```Powershell
+> Request-Assessment -Company 'MyCompany' -AssessmentName 'MyAssessment' -DeviceType 'MyDevice' -File 'C:\Myfile.zip'
+```
+
+This module can be useful for automating planed assessment's request to provide long term insight of your infrastructure.
+
+## What is Mitrend?
+
+As stated in the [Mitrend's website](https://medium.com/mitrend/what-is-mitrend-eb3abb884f21):
+
+> Mitrend helps IT professionals by providing a clear and accurate view of datacenter infrastructure. Our automated services include assessments of a wide range of infrastructure components, from Server and Virtualization to Storage and Backup Systems.
 
 # Requirements
 
